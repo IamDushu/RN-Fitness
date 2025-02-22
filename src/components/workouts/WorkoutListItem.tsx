@@ -14,7 +14,10 @@ type WorkoutListItem = {
 
 export default function WorkoutListItem({ workout }: WorkoutListItem) {
   return (
-    <Card title={dayjs(workout.createdAt).format("HH:mm dddd, D MMM")}>
+    <Card
+      title={dayjs(workout.createdAt).format("hh:mm a, dddd D MMM")}
+      href={`/workout/${workout.id}`}
+    >
       <View style={styles.row}>
         <Text style={styles.headingText}>Exercise</Text>
         <Text style={styles.headingText}>Best set</Text>
