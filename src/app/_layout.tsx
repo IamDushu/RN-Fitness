@@ -1,11 +1,25 @@
+import Colors from "@/constants/Colors";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
+
+DarkTheme.colors.primary = Colors.dark.tint;
+DefaultTheme.colors.primary = Colors.light.tint;
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: "Home" }} />
-      <Stack.Screen name="workout/current" options={{ title: "Workout" }} />
-      <Stack.Screen name="workout/[id]" options={{ title: "Workout" }} />
-    </Stack>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="index" options={{ title: "Home" }} />
+        <Stack.Screen name="workout/current" options={{ title: "Workout" }} />
+        <Stack.Screen name="workout/[id]" options={{ title: "Workout" }} />
+      </Stack>
+    </ThemeProvider>
   );
 }

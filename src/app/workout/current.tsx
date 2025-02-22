@@ -1,8 +1,8 @@
-import { View, Text } from "react-native";
+import { View, Text } from "@/components/general/Themed";
 
 export default function CurrentWorkoutScreen() {
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Text>Current Workout</Text>
     </View>
   );
