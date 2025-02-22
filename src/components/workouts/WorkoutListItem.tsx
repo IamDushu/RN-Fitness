@@ -2,34 +2,48 @@ import { StyleSheet } from "react-native";
 import Card from "../general/Card";
 import { Text, View } from "../general/Themed";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { WorkoutWithExercises } from "@/types/models";
+import { getWorkoutTotalWeight } from "@/services/workoutService";
+import { getBestSet } from "@/services/setService";
+import { calculateDuration } from "@/utils/time";
+import dayjs from "dayjs";
 
-export default function WorkoutListItem() {
+type WorkoutListItem = {
+  workout: WorkoutWithExercises;
+};
+
+export default function WorkoutListItem({ workout }: WorkoutListItem) {
   return (
-    <Card title="15:08 Monday, 23 Sep">
+    <Card title={dayjs(workout.createdAt).format("HH:mm dddd, D MMM")}>
       <View style={styles.row}>
         <Text style={styles.headingText}>Exercise</Text>
         <Text style={styles.headingText}>Best set</Text>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.exerciseText}>3 x Barbell Row</Text>
-        <Text style={styles.exerciseText}>7 x 75 kg</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.exerciseText}>3 x Barbell Row</Text>
-        <Text style={styles.exerciseText}>7 x 75 kg</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.exerciseText}>3 x Barbell Row</Text>
-        <Text style={styles.exerciseText}>7 x 75 kg</Text>
-      </View>
+      {workout.exercises.map((exercise) => {
+        const bestSet = getBestSet(exercise.sets);
+
+        return (
+          <View style={styles.row} key={exercise.id}>
+            <Text style={styles.exerciseText}>
+              {exercise.sets.length} x {exercise.name}
+            </Text>
+            <Text style={styles.exerciseText}>
+              {bestSet?.reps}{" "}
+              {bestSet?.weight ? `x ${bestSet.weight} kg` : "reps"}
+            </Text>
+          </View>
+        );
+      })}
 
       {/* Footer  */}
       <View style={styles.exerciseInfo}>
         <Text style={styles.infoText}>
-          <FontAwesome5 name="clock" size={16} color="gray" /> 0:01
+          <FontAwesome5 name="clock" size={16} color="gray" />{" "}
+          {calculateDuration(workout.createdAt, workout.finishedAt)}
         </Text>
         <Text style={styles.infoText}>
-          <FontAwesome5 name="weight-hanging" size={16} color="gray" /> 7035 kg
+          <FontAwesome5 name="weight-hanging" size={16} color="gray" />{" "}
+          {getWorkoutTotalWeight(workout)} kg
         </Text>
       </View>
     </Card>
