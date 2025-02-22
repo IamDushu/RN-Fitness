@@ -26,7 +26,7 @@ export default function WorkoutScreen() {
           </Text>
         </View>
       }
-      contentContainerStyle={{ padding: 20, gap: 10 }}
+      contentContainerStyle={{ padding: 10, gap: 10 }}
     />
   );
 }
