@@ -3,6 +3,7 @@ import { create } from "zustand";
 import * as Crypto from "expo-crypto";
 import { finishWorkout, newWorkout } from "@/services/workoutService";
 import { createExercise } from "@/services/exerciseService";
+import { immer } from "zustand/middleware/immer";
 
 type State = {
   currentWorkout: WorkoutWithExercises | null;
@@ -15,42 +16,41 @@ type Actions = {
   addExercise: (name: string) => void;
 };
 
-export const useWorkouts = create<State & Actions>()((set, get) => ({
-  currentWorkout: null,
-  workouts: [],
-  startWorkout: () => {
-    const workout = newWorkout();
+export const useWorkouts = create<State & Actions>()(
+  immer((set, get) => ({
+    currentWorkout: null,
+    workouts: [],
+    startWorkout: () => {
+      const workout = newWorkout();
 
-    set({ currentWorkout: workout });
-  },
-  finishWorkout: () => {
-    const { currentWorkout } = get();
+      set({ currentWorkout: workout });
+    },
+    finishWorkout: () => {
+      const { currentWorkout } = get();
 
-    if (!currentWorkout) {
-      return;
-    }
+      if (!currentWorkout) {
+        return;
+      }
 
-    const finishedWorkout = finishWorkout(currentWorkout);
+      const finishedWorkout = finishWorkout(currentWorkout);
 
-    set((prevState) => ({
-      currentWorkout: null,
-      workouts: [finishedWorkout, ...prevState.workouts],
-    }));
-  },
-  addExercise: (name: string) => {
-    const { currentWorkout } = get();
+      set((prev) => {
+        prev.currentWorkout = null;
+        prev.workouts.unshift(finishedWorkout);
+      });
+    },
+    addExercise: (name: string) => {
+      const { currentWorkout } = get();
 
-    if (!currentWorkout) {
-      return;
-    }
+      if (!currentWorkout) {
+        return;
+      }
 
-    const newExercise = createExercise(name, currentWorkout?.id);
+      const newExercise = createExercise(name, currentWorkout?.id);
 
-    set(({ currentWorkout }) => ({
-      currentWorkout: currentWorkout && {
-        ...currentWorkout,
-        exercises: [...currentWorkout?.exercises, newExercise],
-      },
-    }));
-  },
-}));
+      set(({ currentWorkout }) => {
+        currentWorkout?.exercises.push(newExercise);
+      });
+    },
+  }))
+);
