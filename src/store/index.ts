@@ -26,11 +26,20 @@ export const useWorkouts = create<State & Actions>()((set, get) => ({
     set({ currentWorkout: workout });
   },
   finishWorkout: () => {
-    const { currentWorkout, workouts } = get();
+    const { currentWorkout } = get();
 
     if (!currentWorkout) {
       return;
     }
-    set({ currentWorkout: null, workouts: [currentWorkout, ...workouts] });
+
+    const finishedWorkout = {
+      ...currentWorkout,
+      finishedAt: new Date(),
+    };
+
+    set((prevState) => ({
+      currentWorkout: null,
+      workouts: [finishedWorkout, ...prevState.workouts],
+    }));
   },
 }));

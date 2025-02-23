@@ -1,18 +1,19 @@
 import { View, Text } from "@/components/general/Themed";
 import { useEffect, useState } from "react";
-import dummyWorkouts from "@/data/dummyWorkouts";
 import { calculateDurationHourMinutes } from "@/utils/time";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useWorkouts } from "@/store";
+import { Redirect } from "expo-router";
 
 export default function WorkoutHeader() {
   const [timer, setTimer] = useState("0:00");
 
-  const workout = dummyWorkouts[0];
+  const workout = useWorkouts((state) => state.currentWorkout);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const duration = calculateDurationHourMinutes(
-        new Date(workout.createdAt),
+        new Date(workout?.createdAt || ""),
         new Date()
       );
       setTimer(duration);

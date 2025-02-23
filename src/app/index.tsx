@@ -1,11 +1,20 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Text, View } from "@/components/general/Themed";
 import WorkoutListItem from "@/components/workouts/WorkoutListItem";
 import { FlatList } from "react-native";
-import workouts from "@/data/dummyWorkouts";
 import CustomButton from "@/components/general/CustomButton";
+import { useWorkouts } from "@/store";
 
 export default function HomeScreen() {
+  const currentWorkout = useWorkouts((state) => state.currentWorkout);
+  const startWorkout = useWorkouts((state) => state.startWorkout);
+  const workouts = useWorkouts((state) => state.workouts);
+
+  const onStartWorkout = () => {
+    startWorkout();
+    router.push("/workout/current");
+  };
+
   return (
     <View
       style={{
@@ -15,20 +24,19 @@ export default function HomeScreen() {
         backgroundColor: "transparent",
       }}
     >
-      <Link href="/workout/current" asChild>
-        <CustomButton title="Resume workout" />
-      </Link>
+      {currentWorkout ? (
+        <Link href="/workout/current" asChild>
+          <CustomButton title="Resume workout" />
+        </Link>
+      ) : (
+        <CustomButton title="Start a new workout" onPress={onStartWorkout} />
+      )}
 
       <FlatList
         data={workouts}
         contentContainerStyle={{ gap: 8 }}
         renderItem={({ item }) => {
-          const workoutWithDates = {
-            ...item,
-            createdAt: new Date(item.createdAt),
-            finishedAt: new Date(item.finishedAt),
-          };
-          return <WorkoutListItem workout={workoutWithDates} key={item.id} />;
+          return <WorkoutListItem workout={item} key={item.id} />;
         }}
         showsVerticalScrollIndicator={false}
       />
