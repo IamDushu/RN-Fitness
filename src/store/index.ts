@@ -2,6 +2,7 @@ import { WorkoutWithExercises } from "@/types/models";
 import { create } from "zustand";
 import * as Crypto from "expo-crypto";
 import { finishWorkout, newWorkout } from "@/services/workoutService";
+import { createExercise } from "@/services/exerciseService";
 
 type State = {
   currentWorkout: WorkoutWithExercises | null;
@@ -11,6 +12,7 @@ type State = {
 type Actions = {
   startWorkout: () => void;
   finishWorkout: () => void;
+  addExercise: (name: string) => void;
 };
 
 export const useWorkouts = create<State & Actions>()((set, get) => ({
@@ -33,6 +35,22 @@ export const useWorkouts = create<State & Actions>()((set, get) => ({
     set((prevState) => ({
       currentWorkout: null,
       workouts: [finishedWorkout, ...prevState.workouts],
+    }));
+  },
+  addExercise: (name: string) => {
+    const { currentWorkout } = get();
+
+    if (!currentWorkout) {
+      return;
+    }
+
+    const newExercise = createExercise(name, currentWorkout?.id);
+
+    set(({ currentWorkout }) => ({
+      currentWorkout: currentWorkout && {
+        ...currentWorkout,
+        exercises: [...currentWorkout?.exercises, newExercise],
+      },
     }));
   },
 }));
