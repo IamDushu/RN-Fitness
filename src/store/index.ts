@@ -105,6 +105,13 @@ export const useWorkouts = create<State & Actions>()(
         }
 
         exercise.sets = exercise?.sets.filter((s) => s.id !== setId);
+
+        if (!exercise.sets.length && currentWorkout) {
+          //that was the last set
+          currentWorkout.exercises = currentWorkout?.exercises.filter(
+            (e) => e.id !== exercise.id
+          );
+        }
       });
     },
   }))
