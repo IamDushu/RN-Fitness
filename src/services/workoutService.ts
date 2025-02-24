@@ -1,6 +1,6 @@
 import * as Crypto from "expo-crypto";
 import { WorkoutWithExercises } from "@/types/models";
-import { getExerciseTotalWeight } from "./exerciseService";
+import { cleanExercise, getExerciseTotalWeight } from "./exerciseService";
 
 export const getWorkoutTotalWeight = (workout: WorkoutWithExercises) => {
   return workout.exercises.reduce((total, exercise) => {
@@ -20,10 +20,24 @@ export const newWorkout = () => {
 };
 
 export const finishWorkout = (workout: WorkoutWithExercises) => {
+  const cleanedWorkout = cleanupWorkout(workout);
+
   const finishedWorkout = {
-    ...workout,
+    ...cleanedWorkout,
     finishedAt: new Date(),
   };
 
   return finishedWorkout;
+};
+
+const cleanupWorkout = (workout: WorkoutWithExercises) => {
+  const cleanedExercises = workout.exercises
+    .map((e) => cleanExercise(e))
+    .filter((e) => !!e);
+  // same as .filter(e => e !== null) we are removing null values from the resultant map
+
+  return {
+    ...workout,
+    exercises: cleanedExercises,
+  };
 };

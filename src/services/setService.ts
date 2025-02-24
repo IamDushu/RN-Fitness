@@ -52,3 +52,14 @@ export const updateSet = (
 
   return updatedSet;
 };
+
+const isSetComplete = (set: ExerciseSet) => {
+  if (set.reps) {
+    return true;
+  }
+};
+
+export const cleanSets = (sets: ExerciseSet[]) => {
+  const completeSets = sets.filter((set) => isSetComplete(set));
+  return completeSets;
+};
